@@ -14,7 +14,7 @@ Add `poyii/laravel-ifx` as a requirement to composer.json:
 ```json
 {
     "require": {
-        "poyii/laravel-ifx": "1.0.0"
+        "gaborage/laravel-ifx": "1.0.0"
     }
 }
 ```
