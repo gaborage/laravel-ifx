@@ -12,10 +12,10 @@
   ],
   "require": {
     "php": "^7.2.5",
-    "illuminate/support": "5.7.19",
-    "illuminate/database": "5.7.19",
-    "illuminate/pagination": "5.7.19",
-    "illuminate/encryption": "5.7.19",
+    "illuminate/support": "7.*",
+    "illuminate/database": "7.*",
+    "illuminate/pagination": "7.*",
+    "illuminate/encryption": "7.*",
     "guzzlehttp/guzzle": "6.5.5"
   },
   "require-dev": {
