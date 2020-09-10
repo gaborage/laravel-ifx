@@ -11,12 +11,12 @@
     }
   ],
   "require": {
-    "php": "^7.2.5",
-    "illuminate/support": "7.*",
-    "illuminate/database": "7.*",
-    "illuminate/pagination": "7.*",
-    "illuminate/encryption": "7.*",
-    "guzzlehttp/guzzle": "6.5.5"
+    "php": "^7.3.0",
+    "illuminate/support": "8.*",
+    "illuminate/database": "8.*",
+    "illuminate/pagination": "8.*",
+    "illuminate/encryption": "8.*",
+    "guzzlehttp/guzzle": "^7.0.1"
   },
   "require-dev": {
     "fzaninotto/faker": "v1.9.1",
