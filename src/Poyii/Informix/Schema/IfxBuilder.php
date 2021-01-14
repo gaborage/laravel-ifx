@@ -9,7 +9,8 @@ class IfxBuilder extends Builder
     /**
      * Determine if the given table exists.
      *
-     * @param  string  $table
+     * @param string $table
+     *
      * @return bool
      */
     public function hasTable($table)
@@ -18,7 +19,7 @@ class IfxBuilder extends Builder
 
         //$database = $this->connection->getDatabaseName();
 
-        $table = $this->connection->getTablePrefix().$table;
+        $table = $this->connection->getTablePrefix() . $table;
 
         return count($this->connection->select($sql, [$table])) > 0;
     }
@@ -26,14 +27,15 @@ class IfxBuilder extends Builder
     /**
      * Get the column listing for a given table.
      *
-     * @param  string  $table
+     * @param string $table
+     *
      * @return array
      */
     public function getColumnListing($table)
     {
         //$database = $this->connection->getDatabaseName();
 
-        $table = $this->connection->getTablePrefix().$table;
+        $table = $this->connection->getTablePrefix() . $table;
 
         $sql = $this->grammar->compileColumnExists($table);
 

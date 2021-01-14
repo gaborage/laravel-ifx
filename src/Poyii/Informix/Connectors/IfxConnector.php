@@ -2,13 +2,12 @@
 
 namespace Poyii\Informix\Connectors;
 
+use Exception;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Database\Connectors\Connector;
 use Illuminate\Database\Connectors\ConnectorInterface;
-use PDO;
 use Illuminate\Support\Arr;
-use Exception;
-
+use PDO;
 
 class IfxConnector extends Connector implements ConnectorInterface
 {
@@ -20,12 +19,13 @@ class IfxConnector extends Connector implements ConnectorInterface
      * @var array
      */
     protected $options = [
-        PDO::ATTR_CASE => PDO::CASE_NATURAL,
+        PDO::ATTR_CASE    => PDO::CASE_NATURAL,
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     ];
 
     /**
      * IfxConnector constructor.
+     *
      * @param $encrypter
      */
     public function __construct(Encrypter $encrypter)
@@ -38,8 +38,8 @@ class IfxConnector extends Connector implements ConnectorInterface
         $username = Arr::get($config, 'username');
         $password = Arr::get($config, 'password');
 
-        if($this->encrypter && strlen($password) > 50){
-            if(starts_with("base64:", $password)){
+        if ($this->encrypter && strlen($password) > 50) {
+            if (starts_with('base64:', $password)) {
                 $password = $this->encrypter->decrypt(substr($password, 7));
             } else {
                 $password = $this->encrypter->decrypt($password);
@@ -57,11 +57,11 @@ class IfxConnector extends Connector implements ConnectorInterface
         return $pdo;
     }
 
-
     /**
      * Establish a database connection.
      *
-     * @param  array  $config
+     * @param array $config
+     *
      * @return \PDO
      */
     public function connect(array $config)
@@ -76,10 +76,11 @@ class IfxConnector extends Connector implements ConnectorInterface
         $connection = $this->createConnection($dsn, $config, $options);
 
         if (Arr::get($config, 'initSqls', false)) {
-            if(is_string($config['initSqls']))
+            if (is_string($config['initSqls'])) {
                 $connection->exec($config['initSqls']);
-            if(is_array($config['initSqls'])){
-                $connection->exec( implode('; ', $config['initSqls']) );
+            }
+            if (is_array($config['initSqls'])) {
+                $connection->exec(implode('; ', $config['initSqls']));
             }
         }
 
@@ -91,21 +92,26 @@ class IfxConnector extends Connector implements ConnectorInterface
      *
      * Chooses socket or host/port based on the 'unix_socket' config value.
      *
-     * @param  array   $config
+     * @param array $config
+     *
      * @return string
      */
     protected function getDsn(array $config)
     {
         // informix:host=68.1.32.36; service=9021; database=gu5200car3gdb; server=gu_5200_cb_rss; protocol=onsoctcp
-        return "informix:host={$config['host']}; database={$config['database']}; service={$config['service']}; server={$config['server']}; ".$this->getDsnOption($config);
+        return "informix:host={$config['host']}; database={$config['database']}; service={$config['service']}; server={$config['server']}; " . $this->getDsnOption($config);
     }
 
     protected function getDsnOption(array $config)
     {
-        $options = "protocol=".Arr::get($config, "onsoctcp", "onsoctcp").";";
+        $options = 'protocol=' . Arr::get($config, 'onsoctcp', 'onsoctcp') . ';';
 
-        if(isset($config['db_locale'])) $options.=" DB_LOCALE={$config['db_locale']};";
-        if(isset($config['client_locale'])) $options.=" CLIENT_LOCALE={$config['client_locale']};";
+        if (isset($config['db_locale'])) {
+            $options .= " DB_LOCALE={$config['db_locale']};";
+        }
+        if (isset($config['client_locale'])) {
+            $options .= " CLIENT_LOCALE={$config['client_locale']};";
+        }
 
         return $options;
     }

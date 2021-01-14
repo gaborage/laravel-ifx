@@ -10,7 +10,8 @@ class IfxProcessor extends Processor
     /**
      * Process the results of a column listing query.
      *
-     * @param  array  $results
+     * @param array $results
+     *
      * @return array
      */
     public function processColumnListing($results)
@@ -33,5 +34,4 @@ class IfxProcessor extends Processor
     {
         return $results;
     }
-
 }

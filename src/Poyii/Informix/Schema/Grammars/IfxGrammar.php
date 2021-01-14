@@ -3,18 +3,18 @@
  * Created by PhpStorm.
  * User: llaijiale
  * Date: 2016/1/20
- * Time: 14:38
+ * Time: 14:38.
  */
+
 namespace Poyii\Informix\Schema\Grammars;
 
-use Illuminate\Database\Schema\Grammars\Grammar;
-use Illuminate\Support\Fluent;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\Grammars\Grammar;
+use Illuminate\Support\Fluent;
 
 class IfxGrammar extends Grammar
 {
-
     /**
      * The possible column modifiers.
      *
@@ -34,58 +34,18 @@ class IfxGrammar extends Grammar
         return 'select * from systables where tabname=lower(?)';
     }
 
-
     public function compileColumnExists($table)
     {
         return 'select b.colname from systables a join syscolumns b on a.tabid=b.tabid where a.tabname=lower(?)';
-    }
-
-
-    protected function addPrimaryKeys(Blueprint $blueprint)
-    {
-        $primary = $this->getCommandByName($blueprint, 'primary');
-        if (! is_null($primary)) {
-            $columns = $this->columnize($primary->columns);
-            return ", primary key ( {$columns} ) constraint {$primary->index}";
-        }
-    }
-
-    protected function addForeignKeys(Blueprint $blueprint)
-    {
-        $sql = '';
-
-        $foreigns = $this->getCommandsByName($blueprint, 'foreign');
-
-        // Once we have all the foreign key commands for the table creation statement
-        // we'll loop through each of them and add them to the create table SQL we
-        // are building
-        foreach ($foreigns as $foreign) {
-            $on = $this->wrapTable($foreign->on);
-
-            $columns = $this->columnize($foreign->columns);
-
-            $onColumns = $this->columnize((array) $foreign->references);
-
-            $sql .= ", foreign key ( {$columns} ) references {$on} ( {$onColumns} ) constraint {$foreign->index}";
-
-            // Once we have the basic foreign key creation statement constructed we can
-            // build out the syntax for what should happen on an update or delete of
-            // the affected columns, which will get something like "cascade", etc.
-            if (! is_null($foreign->onDelete)) {
-                $sql .= " on delete {$foreign->onDelete}";
-            }
-        }
-
-        return $sql;
     }
 
     public function compileCreate(Blueprint $blueprint, Fluent $command)
     {
         $columns = implode(', ', $this->getColumns($blueprint));
 
-        $sql = $blueprint->temporary ? "create temp" : 'create';
+        $sql = $blueprint->temporary ? 'create temp' : 'create';
 
-        $sql .= ' table '.$this->wrapTable($blueprint)." ( $columns";
+        $sql .= ' table ' . $this->wrapTable($blueprint) . " ( $columns";
 
         // To be able to name the primary/foreign keys when the table is
         // initially created we will need to check for a primary/foreign
@@ -98,14 +58,16 @@ class IfxGrammar extends Grammar
 
         $sql .= ' )';
 
-        if(isset($blueprint->engine)){
-            if(is_string($blueprint->engine))
-                $sql.=$blueprint->engine;
-            else if(is_array($blueprint->engine)){
-                if($blueprint->engine['extent'] > 32)
-                    $sql.=" extent size ".(int)$blueprint->engine['extent'];
-                if($blueprint->engine['next'] > 32)
-                    $sql.=" next size ".(int)$blueprint->engine['next'];
+        if (isset($blueprint->engine)) {
+            if (is_string($blueprint->engine)) {
+                $sql .= $blueprint->engine;
+            } elseif (is_array($blueprint->engine)) {
+                if ($blueprint->engine['extent'] > 32) {
+                    $sql .= ' extent size ' . (int) $blueprint->engine['extent'];
+                }
+                if ($blueprint->engine['next'] > 32) {
+                    $sql .= ' next size ' . (int) $blueprint->engine['next'];
+                }
             }
         }
 
@@ -116,13 +78,12 @@ class IfxGrammar extends Grammar
     {
         $columns = implode(', ', $this->getColumns($blueprint));
 
-        $sql = 'alter table '.$this->wrapTable($blueprint)." add ( $columns";
+        $sql = 'alter table ' . $this->wrapTable($blueprint) . " add ( $columns";
 
         $sql .= (string) $this->addPrimaryKeys($blueprint);
 
         return $sql .= ' )';
     }
-
 
     /**
      * Compile a primary key command.
@@ -171,7 +132,7 @@ class IfxGrammar extends Grammar
             if (! is_null($command->onDelete)) {
                 $sql .= " on delete {$command->onDelete}";
             }
-            $sql .=" constraint {$command->index}";
+            $sql .= " constraint {$command->index}";
 
             return $sql;
         }
@@ -212,7 +173,7 @@ class IfxGrammar extends Grammar
      */
     public function compileDrop(Blueprint $blueprint, Fluent $command)
     {
-        return 'drop table '.$this->wrapTable($blueprint);
+        return 'drop table ' . $this->wrapTable($blueprint);
     }
 
     /**
@@ -226,7 +187,7 @@ class IfxGrammar extends Grammar
 
         $table = $this->wrapTable($blueprint);
 
-        return 'alter table '.$table.' drop ( '.implode(', ', $columns).' )';
+        return 'alter table ' . $table . ' drop ( ' . implode(', ', $columns) . ' )';
     }
 
     /**
@@ -237,6 +198,7 @@ class IfxGrammar extends Grammar
     public function compileDropPrimary(Blueprint $blueprint, Fluent $command)
     {
         $table = $this->wrapTable($blueprint);
+
         return "alter table {$table} drop constraint {$command->index}";
     }
 
@@ -248,6 +210,7 @@ class IfxGrammar extends Grammar
     public function compileDropUnique(Blueprint $blueprint, Fluent $command)
     {
         $table = $this->wrapTable($blueprint);
+
         return "alter table {$table} drop constraint {$command->index}";
     }
 
@@ -269,6 +232,7 @@ class IfxGrammar extends Grammar
     public function compileDropForeign(Blueprint $blueprint, Fluent $command)
     {
         $table = $this->wrapTable($blueprint);
+
         return "alter table {$table} drop constraint {$command->index}";
     }
 
@@ -280,7 +244,8 @@ class IfxGrammar extends Grammar
     public function compileRename(Blueprint $blueprint, Fluent $command)
     {
         $table = $this->wrapTable($blueprint);
-        return "rename table {$table} to ".$this->wrapTable($command->to);
+
+        return "rename table {$table} to " . $this->wrapTable($command->to);
     }
 
     /**
@@ -291,31 +256,75 @@ class IfxGrammar extends Grammar
     public function compileRenameColumn(Blueprint $blueprint, Fluent $command, Connection $connection)
     {
         $table = $this->wrapTable($blueprint);
-        $rs = ["rename column {$table}.{$command->from} to {$command->to}"];
+        $rs    = ["rename column {$table}.{$command->from} to {$command->to}"];
+
         return $rs;
     }
 
+    protected function addPrimaryKeys(Blueprint $blueprint)
+    {
+        $primary = $this->getCommandByName($blueprint, 'primary');
+        if (! is_null($primary)) {
+            $columns = $this->columnize($primary->columns);
+
+            return ", primary key ( {$columns} ) constraint {$primary->index}";
+        }
+    }
+
+    protected function addForeignKeys(Blueprint $blueprint)
+    {
+        $sql = '';
+
+        $foreigns = $this->getCommandsByName($blueprint, 'foreign');
+
+        // Once we have all the foreign key commands for the table creation statement
+        // we'll loop through each of them and add them to the create table SQL we
+        // are building
+        foreach ($foreigns as $foreign) {
+            $on = $this->wrapTable($foreign->on);
+
+            $columns = $this->columnize($foreign->columns);
+
+            $onColumns = $this->columnize((array) $foreign->references);
+
+            $sql .= ", foreign key ( {$columns} ) references {$on} ( {$onColumns} ) constraint {$foreign->index}";
+
+            // Once we have the basic foreign key creation statement constructed we can
+            // build out the syntax for what should happen on an update or delete of
+            // the affected columns, which will get something like "cascade", etc.
+            if (! is_null($foreign->onDelete)) {
+                $sql .= " on delete {$foreign->onDelete}";
+            }
+        }
+
+        return $sql;
+    }
 
     /**
      * Wrap a single string in keyword identifiers.
      *
-     * @param  string  $value
+     * @param string $value
+     *
      * @return string
      */
     protected function wrapValue($value)
     {
-        if ($value === '*') {
+        if ('*' === $value) {
             return $value;
         }
+
         return $value;
     }
 
-    protected function typeChar(Fluent $column) {
-        if($column->length < 256){
-            return 'char('.(int)$column->length.')';
+    protected function typeChar(Fluent $column)
+    {
+        if ($column->length < 256) {
+            return 'char(' . (int) $column->length . ')';
         }
+
         return 'char(255)';
     }
+
     /**
      * Create the column definition for a string type.
      *
@@ -323,11 +332,13 @@ class IfxGrammar extends Grammar
      */
     protected function typeString(Fluent $column)
     {
-        if($column->length < 256)
+        if ($column->length < 256) {
             return "varchar({$column->length})";
-        else if($column->length < 32740)
+        } elseif ($column->length < 32740) {
             return "lvarchar({$column->length})";
-        return "lvarchar(32739)";
+        }
+
+        return 'lvarchar(32739)';
     }
 
     /**
@@ -367,9 +378,10 @@ class IfxGrammar extends Grammar
      */
     protected function typeBigInteger(Fluent $column)
     {
-        if($column->autoIncrement){
+        if ($column->autoIncrement) {
             return 'serial8(1)';
         }
+
         return 'int8';
     }
 
@@ -380,9 +392,10 @@ class IfxGrammar extends Grammar
      */
     protected function typeInteger(Fluent $column)
     {
-        if($column->autoIncrement){
+        if ($column->autoIncrement) {
             return 'serial(1)';
         }
+
         return 'int';
     }
 
@@ -405,6 +418,7 @@ class IfxGrammar extends Grammar
     {
         return 'smallint';
     }
+
     /**
      * Create the column definition for a tiny integer type.
      *
@@ -444,7 +458,6 @@ class IfxGrammar extends Grammar
     {
         return "decimal({$column->total}, {$column->places})";
     }
-
 
     /**
      * Create the column definition for a boolean type.
@@ -525,7 +538,7 @@ class IfxGrammar extends Grammar
     {
         $null = $column->nullable ? ' ' : ' not null';
         if (! is_null($column->default)) {
-            return ' default '.$this->getDefaultValue($column->default).$null;
+            return ' default ' . $this->getDefaultValue($column->default) . $null;
         }
 
         return $null;
@@ -554,13 +567,12 @@ class IfxGrammar extends Grammar
     }
 
     /**
-     *
      * @return string|null
      */
     protected function modifyBefore(Blueprint $blueprint, Fluent $column)
     {
         if (! is_null($column->before)) {
-            return ' before '.$this->wrap($column->before);
+            return ' before ' . $this->wrap($column->before);
         }
     }
 
@@ -571,15 +583,13 @@ class IfxGrammar extends Grammar
         }
 
         if (is_bool($value)) {
-            return "'".(int) $value."'";
+            return "'" . (int) $value . "'";
         }
 
         if (is_string($value)) {
-            return "'".strval($value)."'";
+            return "'" . strval($value) . "'";
         }
 
         return strval($value);
     }
-
-
 }
